@@ -11,14 +11,13 @@ sixteen_seventeen = pandas.read_csv(cwd+'/2016_17.csv', names=names)
 fifteen_sixteen = pandas.read_csv(cwd+'/2015_16.csv', names=names)
 
 
-replacement_cols = ["G", "A", "P", "P1", "P/60", "P1/60", "GF", "GA", "G+/-", "GF%"]
-seventeen_eighteen[replacement_cols] = seventeen_eighteen[replacement_cols].replace('--', 0)
-sixteen_seventeen[replacement_cols] = sixteen_seventeen[replacement_cols].replace('--', 0)
-fifteen_sixteen[replacement_cols] = fifteen_sixteen[replacement_cols].replace('--', 0)
+seventeen_eighteen[names] = seventeen_eighteen[names].replace('--', 0)
+sixteen_seventeen[names] = sixteen_seventeen[names].replace('--', 0)
+fifteen_sixteen[names] = fifteen_sixteen[names].replace('--', 0)
 
-s1 = seventeen_eighteen.to_dict('records')
-s2 = sixteen_seventeen.to_dict('records')
-s3 = fifteen_sixteen.to_dict('records')
+s1 = seventeen_eighteen.to_dict('records')[1:]
+s2 = sixteen_seventeen.to_dict('records')[1:]
+s3 = fifteen_sixteen.to_dict('records')[1:]
 
 data = s1+s2+s3
 
