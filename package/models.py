@@ -1,4 +1,4 @@
-from __init__ import db
+from package import db
 from sqlalchemy.sql import func
 
 class Team(db.Model):
@@ -12,8 +12,8 @@ class Team(db.Model):
     conference = db.Column(db.String(20), nullable=False)
     official_site = db.Column(db.String(50), nullable=False)
     players = db.relationship('Player', back_populates='team', lazy='dynamic')
-    def roster(self):
-        return [player for player in self.players for season in player.seasons if season.year == '17-18']
+    def roster(self, season):
+        return [player for player in self.players for season in player.seasons if season.year == season]
 
 
 
