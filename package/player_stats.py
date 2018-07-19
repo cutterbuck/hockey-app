@@ -21,3 +21,23 @@ s2 = sixteen_seventeen.to_dict('records')
 s3 = fifteen_sixteen.to_dict('records')
 
 data = s1+s2+s3
+
+for player in data:
+    if '..' in player['Player']:
+        first, last = player['Player'].split('..')
+        player['Player'] = first.replace(" ", "").upper() + " " + last.title()
+    elif len(player['Player'].split(" ")[0]) == 2:
+        first, last = player['Player'].split(' ')
+        player['Player'] = first.upper() + " " + last.title()
+
+    if '/' in player['Team']:
+        player['Team'] = player['Team'].split('/ ')[-1]
+
+    if player['Team'] == 'N.J':
+        player['Team'] = 'NJD'
+    elif player['Team'] == 'T.B':
+        player['Team'] = 'TBL'
+    elif player['Team'] == 'L.A':
+        player['Team'] = 'LAK'
+    elif player['Team'] == 'S.J':
+        player['Team'] = 'SJS'
