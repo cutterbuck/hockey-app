@@ -10,18 +10,10 @@ def create_team_objects():
     db.session.commit()
 
 def create_player_objects():
-    for player in data[1:]:
-        team = db.session.query(Team).filter(Team.abbreviation == player['Team']).first()
+    for player in data:
         if bool(db.session.query(Player).filter_by(name=player['Player']).first()) == False:
-            player_obj = Player(name=player['Player'], position=player['Position'][0], team=team)
+            player_obj = Player(name=player['Player'], position=player['Position'][0])
             db.session.add(player_obj)
-    db.session.commit()
-
-def create_season_objects():
-    for player in data[1:]:
-        player_search = Player.query.filter_by(name=player['Player']).first()
-        season = Season(year=player['Season'], player=player_search)
-        db.session.add(season)
     db.session.commit()
 
 def create_weighted_cf(player):
@@ -39,10 +31,12 @@ def create_weighted_corsi_percent(player):
         wc_denom = create_weighted_cf(player)+create_weighted_ca(player)
         return round(100*(create_weighted_cf(player)/wc_denom), 2)
 
-def create_statistics_objects():
+
+def create_season_and_stat_objects():
     for player in data:
         player_search = Player.query.filter_by(name=player['Player']).first()
-        season_search = Season.query.filter(Season.player==player_search, Season.year==player['Season']).first()
-        stat_line = Statistic(end_yr_team=player['Team'], games_played=int(player['GP']), time_on_ice=round(float(player['TOI']),2), goals=int(player['G']), assists=int(player['A']), points=int(player['P']), primary_points=int(player['P1']), pts_per_60=round(float(player['P/60']),2), p_pts_per_60=round(float(player['P1/60']),2), cf=int(player['CF']), ca=int(player['CA']), corsi_plus_minus=int(player['C+/-']), cf_percentage=round(float(player['CF%']),2), rel_cf=round(float(player['Rel CF%']),2), gf=int(player['GF']), ga=int(player['GA']), plus_minus=int(player['G+/-']), pdo=round(float(player['PDO']),2), zsr=round(float(player['ZSR']),2), weighted_cf=create_weighted_cf(player), weighted_ca=create_weighted_ca(player), weighted_corsi_percentage=create_weighted_corsi_percent(player), season=season_search)
-        db.session.add(stat_line)
+        team_search = Team.query.filter_by(abbreviation=player['Team']).first()
+        stat_line = Statistic(end_yr_team=player['Team'], games_played=int(player['GP']), time_on_ice=round(float(player['TOI']),2), goals=int(player['G']), assists=int(player['A']), points=int(player['P']), primary_points=int(player['P1']), pts_per_60=round(float(player['P/60']),2), p_pts_per_60=round(float(player['P1/60']),2), cf=int(player['CF']), ca=int(player['CA']), corsi_plus_minus=int(player['C+/-']), cf_percentage=round(float(player['CF%']),2), rel_cf=round(float(player['Rel CF%']),2), gf=int(player['GF']), ga=int(player['GA']), plus_minus=int(player['G+/-']), pdo=round(float(player['PDO']),2), zsr=round(float(player['ZSR']),2), weighted_cf=create_weighted_cf(player), weighted_ca=create_weighted_ca(player), weighted_corsi_percentage=create_weighted_corsi_percent(player))
+        season = Season(year=player['Season'], player=player_search, team=team_search, statistic=stat_line)
+        db.session.add(season)
     db.session.commit()

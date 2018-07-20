@@ -11,9 +11,23 @@ class Team(db.Model):
     division = db.Column(db.String(20), nullable=False)
     conference = db.Column(db.String(20), nullable=False)
     official_site = db.Column(db.String(50), nullable=False)
-    players = db.relationship('Player', back_populates='team', lazy='dynamic')
-    def roster(self, season):
-        return [player for player in self.players for season in player.seasons if season.year == season]
+    seasons = db.relationship('Season', back_populates='team', lazy='dynamic')
+    players = db.relationship('Player', secondary='seasons', back_populates='teams', lazy='dynamic')
+
+    def roster(self, year_input):
+        return [season.player for season in self.seasons.all() if season.year == year_input]
+
+
+
+class Season(db.Model):
+    __tablename__ = 'seasons'
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.String(8), nullable=False)
+    team = db.relationship('Team', back_populates='seasons')
+    team_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
+    player = db.relationship('Player', back_populates='seasons')
+    player_id = db.Column(db.Integer, db.ForeignKey('players.id'))
+    statistic = db.relationship('Statistic', back_populates='season', uselist=False)
 
 
 
@@ -22,48 +36,42 @@ class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
     position = db.Column(db.String(1), nullable=False)
-    team = db.relationship('Team', back_populates='players')
-    team_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
     seasons = db.relationship('Season', back_populates='player', lazy='dynamic')
+    teams = db.relationship('Team', secondary='seasons', back_populates='players', lazy='dynamic')
+    statistics = db.relationship('Statistic', secondary='seasons')
     def total_goals(self):
         total = 0
-        for season in self.seasons:
-            total += season.statistic.goals
+        for stat in self.statistics:
+            total += stat.goals
         return total
 
     def total_assists(self):
         total = 0
-        for season in self.seasons:
-            total += season.statistic.assists
+        for stat in self.statistics:
+            total += stat.assists
         return total
 
     def total_points(self):
         total = 0
-        for season in self.seasons:
-            total += season.statistic.points
+        for stat in self.statistics:
+            total += stat.points
         return total
 
     def total_primary_points(self):
         total = 0
-        for season in self.seasons:
-            total += season.statistic.primary_points
+        for stat in self.statistics:
+            total += stat.primary_points
         return total
 
     def avg_games_played(self):
         total = 0
-        for season in self.seasons:
-            total += season.statistic.games_played
+        for stat in self.statistics:
+            total += stat.games_played
         return round(total/len(self.seasons.all()), 2)
 
-
-
-class Season(db.Model):
-    __tablename__ = 'seasons'
-    id = db.Column(db.Integer, primary_key=True)
-    year = db.Column(db.String(8), nullable=False)
-    player = db.relationship('Player', back_populates='seasons')
-    player_id = db.Column(db.Integer, db.ForeignKey('players.id'))
-    statistic = db.relationship('Statistic', back_populates='season', uselist=False)
+    def stats_by_year(self, year_input):
+        season = Season.query.filter(Season.player==self, Season.year==year_input).first()
+        return season.statistic
 
 
 
