@@ -6,6 +6,8 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
     abbreviation = db.Column(db.String(3))
+    primary_color = db.Column(db.String(30))
+    secondary_color = db.Column(db.String(30))
     city = db.Column(db.String(30), nullable=False)
     arena = db.Column(db.String(40), nullable=False)
     division = db.Column(db.String(20), nullable=False)
@@ -75,7 +77,9 @@ class Player(db.Model):
         season = Season.query.filter(Season.player==self, Season.year==year_input).first()
         return season.statistic
 
-
+    def team_this_year(self, year_input):
+        season = Season.query.filter(Season.player==self, Season.year==year_input).first()
+        return season.team
 
 
 class Statistic(db.Model):

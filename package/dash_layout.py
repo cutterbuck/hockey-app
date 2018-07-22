@@ -68,6 +68,8 @@ def create_graph(players, year_input, x_axis_input, y_axis_input):
     names = [player.name for player in players]
     x = [getattr(player.stats_by_year(year_input), x_axis_input) for player in players]
     y = [getattr(player.stats_by_year(year_input), y_axis_input) for player in players]
+    primary_color = [player.team_this_year(year_input).primary_color for player in players]
+    secondary_color = [player.team_this_year(year_input).secondary_color for player in players]
     return dcc.Graph(
         id='life-exp-vs-gdp',
         className='container',
@@ -80,8 +82,10 @@ def create_graph(players, year_input, x_axis_input, y_axis_input):
                     mode='markers',
                     opacity=0.7,
                     marker={
-                        'size': 15,
-                        'line': {'width': 0.5, 'color': 'white'}
+                        'size': 17,
+                        'line': {'width': 2.0, 'color': secondary_color},
+                        'color': primary_color,
+                        'opacity': 0.95
                     },
                     name=names
                 )
@@ -92,7 +96,8 @@ def create_graph(players, year_input, x_axis_input, y_axis_input):
                 title='NHL 5v5 Stats by Team',
                 margin={'l': 40, 'b': 40, 't': 50, 'r': 10},
                 legend={'x': 0, 'y': 1},
-                hovermode='closest'
+                hovermode='closest',
+                plot_bgcolor='rgba(211,211,211,0.1)'
             )
         }
     )

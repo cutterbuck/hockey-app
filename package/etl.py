@@ -1,4 +1,4 @@
-from teams_data import teams_data
+from teams_data import teams_data, team_colors
 from player_stats import data, cap_hits, ages
 from models import Team, Player, Season, Statistic, db
 
@@ -58,6 +58,17 @@ def add_age_info():
                 db.session.add(player)
     db.session.commit()
 
+def add_colors_to_teams():
+    for team_obj in Team.query.all():
+        for team, colors in team_colors.items():
+            if team_obj.abbreviation == team:
+                team_obj.primary_color = colors['primary']
+                team_obj.secondary_color = colors['secondary']
+                db.session.add(team_obj)
+    db.session.commit()
+
+
+
 
 def add_all_to_db():
     create_team_objects()
@@ -65,5 +76,6 @@ def add_all_to_db():
     create_season_and_stat_objects()
     add_cap_hit_info()
     add_age_info()
+    add_colors_to_teams()
 
 # add_all_to_db()
