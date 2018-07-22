@@ -1,8 +1,9 @@
 import os, pandas
+import re
 
 cwd = os.getcwd()
 
-
+# stats data
 names = ["Player", "Season", "Team", "Position", "GP", "TOI", "G", "A", "P", "P1", "P/60", "P1/60", "GS", "GS/60", "CF", "CA", "C+/-", "CF%", "Rel CF%", "GF", "GA", "G+/-", "GF%", "Rel GF%", "xGF", "xGA", "xG+/-", "xGF%", "Rel xGF%", "iPENT", "iPEND", "iP+/-", "iCF", "iCF/60", "ixGF", "ixGF/60", "iSh%", "PDO", "ZSR", "TOI%", "TOI% QoT", "CF% QoT", "TOI% QoC", "CF% QoC"]
 
 
@@ -40,3 +41,23 @@ for player in data:
         player['Team'] = 'LAK'
     elif player['Team'] == 'S.J':
         player['Team'] = 'SJS'
+
+
+# cap hit data
+raw = pandas.read_csv(cwd+'/contracts.csv',usecols=["Player", "Cap Hit"])
+raw.fillna('0', inplace=True)
+cap_hits = raw.to_dict('records')[1:]
+
+for player in cap_hits:
+    player['Player'] = player['Player'].lower()
+    player['Player'] = re.sub(r'(?<!\w)([a-z])\.', r'\1', player['Player'])
+    comma_strip = player['Cap Hit'].replace(',', '')
+    player['Cap Hit'] = int(comma_strip)
+
+# player ages
+raw_ages = pandas.read_csv(cwd+'/player_age.csv', usecols=["Player", "Age"])
+ages = raw_ages.to_dict('records')[1:]
+for player in ages:
+    player['Player'] = player['Player'].split("\\")[0]
+    player['Player'] = player['Player'].lower()
+    player['Player'] = re.sub(r'(?<!\w)([a-z])\.', r'\1', player['Player'])

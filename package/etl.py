@@ -1,5 +1,5 @@
 from teams_data import teams_data
-from player_stats import data
+from player_stats import data, cap_hits, ages
 from models import Team, Player, Season, Statistic, db
 
 
@@ -31,7 +31,6 @@ def create_weighted_corsi_percent(player):
         wc_denom = create_weighted_cf(player)+create_weighted_ca(player)
         return round(100*(create_weighted_cf(player)/wc_denom), 2)
 
-
 def create_season_and_stat_objects():
     for player in data:
         player_search = Player.query.filter_by(name=player['Player']).first()
@@ -40,3 +39,31 @@ def create_season_and_stat_objects():
         season = Season(year=player['Season'], player=player_search, team=team_search, statistic=stat_line)
         db.session.add(season)
     db.session.commit()
+
+def add_cap_hit_info():
+    for player in Player.query.all():
+        lower_case = player.name.lower()
+        for cap_hit in cap_hits:
+            if lower_case == cap_hit['Player']:
+                player.cap_hit = int(cap_hit['Cap Hit'])
+                db.session.add(player)
+    db.session.commit()
+
+def add_age_info():
+    for player in Player.query.all():
+        lower_case = player.name.lower()
+        for age in ages:
+            if lower_case == age['Player']:
+                player.age = age['Age']
+                db.session.add(player)
+    db.session.commit()
+
+
+def add_all_to_db():
+    create_team_objects()
+    create_player_objects()
+    create_season_and_stat_objects()
+    add_cap_hit_info()
+    add_age_info()
+
+# add_all_to_db()

@@ -35,7 +35,9 @@ class Player(db.Model):
     __tablename__ = 'players'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
+    age = db.Column(db.Integer)
     position = db.Column(db.String(1), nullable=False)
+    cap_hit = db.Column(db.Integer)
     seasons = db.relationship('Season', back_populates='player', lazy='dynamic')
     teams = db.relationship('Team', secondary='seasons', back_populates='players', lazy='dynamic')
     statistics = db.relationship('Statistic', secondary='seasons')
