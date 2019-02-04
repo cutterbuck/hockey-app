@@ -1,4 +1,4 @@
-Hockey Advanced Stats Interactive Chart
+Hockey Advanced Stats Interactive Scatter Chart
 
 I believe that the now infamous hockey advanced statistic, most commonly known as "Corsi", is a highly flawed metric. A player's Corsi is calculated by looking at his/her team's shot attempts (shots on goal, wide, or blocked) in relation to the opposing team's shot attempts while this player is on the ice. For example, a player with a Corsi far above 50% may be considered above average because while the player is on the ice, the player's team is attempting more shots on the other team's net. Under such prism, Shot attempts are considered a proxy for puck possession and chance generation.
 
