@@ -78,4 +78,4 @@ def add_all_to_db():
     add_age_info()
     add_colors_to_teams()
 
-# add_all_to_db()
+add_all_to_db()

@@ -29,6 +29,9 @@ for player in data:
     elif len(player['Player'].split(" ")[0]) == 2:
         first, last = player['Player'].split(' ')
         player['Player'] = first.upper() + " " + last.title()
+    elif bool(re.search(r'\d', player['Player'])):
+        if player['Player'].startswith('5'):
+            player['Player'] = player['Player'].replace('5', 'S')
 
     if '/' in player['Team']:
         player['Team'] = player['Team'].split('/ ')[-1]

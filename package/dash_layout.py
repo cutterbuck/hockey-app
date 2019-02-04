@@ -5,7 +5,6 @@ from package import app
 from package.models import db, Team, Player, Season, Statistic
 import plotly.graph_objs as go
 
-
 def generate_team_dropdown():
     sorted_teams = sorted(Team.query.all(), key=lambda team: team.name)
     teams = [{'label': team.name, 'value': team.name} for team in sorted_teams]
@@ -13,7 +12,7 @@ def generate_team_dropdown():
     return dcc.Dropdown(
         id='team_selector',
         options=teams,
-        value='Total NHL',
+        value='New York Rangers',
         className='three columns'
     )
 
@@ -26,26 +25,50 @@ def generate_season_dropdown():
         className='three columns'
     )
 
+def items_filter(items):
+    for item_string in items:
+        if '_' in item_string:
+            index = items.index(item_string)
+            split_words = item_string.split('_')
+            formatted_words = []
+            for word in split_words:
+                if len(word) < 4:
+                    word = word.upper()
+                    formatted_words.append(word)
+                else:
+                    word = word.capitalize()
+                    formatted_words.append(word)
+            items[index] = ' '.join(formatted_words)
+        elif len(item_string) < 5:
+            index = items.index(item_string)
+            items[index] = item_string.upper()
+        elif len(item_string) >= 5:
+            index = items.index(item_string)
+            items[index] = item_string.capitalize()
+    return items
+
 def generate_x_axis_dropdown():
     items = dir(Statistic)
     items = [el for el in items if '__' not in el if not el.startswith('_')]
-    dd_items = [{'label': item, 'value': item} for item in items if item not in ('end_yr_team', 'metadata', 'id', 'season_id', 'query', 'query_class', 'season')]
-    dd_items.remove
+    filtered_items = items_filter(items)
+    dd_items = [{'label': item, 'value': item} for item in filtered_items if item not in ('END YR Team', 'Metadata', 'ID', 'Season ID', 'Query', 'Query Class', 'Season')]
+
     return dcc.Dropdown(
         id='x_axis_selector',
         options=dd_items,
-        value='pdo',
+        value='PDO',
         className='three columns'
     )
 
 def generate_y_axis_dropdown():
     items = dir(Statistic)
     items = [el for el in items if '__' not in el if not el.startswith('_')]
-    dd_items = [{'label': item, 'value': item} for item in items]
+    filtered_items = items_filter(items)
+    dd_items = [{'label': item, 'value': item} for item in filtered_items if item not in ('END YR Team', 'Metadata', 'ID', 'Season ID', 'Query', 'Query Class', 'Season')]
     return dcc.Dropdown(
         id='y_axis_selector',
         options=dd_items,
-        value='weighted_corsi_percentage',
+        value='Weighted Corsi Percentage',
         className='three columns'
     )
 
@@ -66,10 +89,14 @@ def get_relevant_players(team_input, year_input):
 
 def create_graph(players, year_input, x_axis_input, y_axis_input):
     names = [player.name for player in players]
-    x = [getattr(player.stats_by_year(year_input), x_axis_input) for player in players]
-    y = [getattr(player.stats_by_year(year_input), y_axis_input) for player in players]
+    fomatted_x_input = input_converter(x_axis_input)
+    formatted_y_input = input_converter(y_axis_input)
+
+    x = [getattr(player.stats_by_year(year_input), fomatted_x_input) for player in players]
+    y = [getattr(player.stats_by_year(year_input), formatted_y_input) for player in players]
     primary_color = [player.team_this_year(year_input).primary_color for player in players]
     secondary_color = [player.team_this_year(year_input).secondary_color for player in players]
+
     return dcc.Graph(
         id='life-exp-vs-gdp',
         className='container',
@@ -87,7 +114,6 @@ def create_graph(players, year_input, x_axis_input, y_axis_input):
                         'color': primary_color,
                         'opacity': 0.95
                     },
-                    name=names
                 )
             ],
             'layout': go.Layout(
@@ -103,10 +129,36 @@ def create_graph(players, year_input, x_axis_input, y_axis_input):
     )
 
 
+def input_converter(input):
+    input_dict = {
+        'PDO': 'pdo',
+        'Games Played': 'games_played',
+        'Time ON ICE': 'time_on_ice',
+        'Goals': 'goals',
+        'Assists': 'assists',
+        'Points': 'points',
+        'Primary Points': 'primary_points',
+        'PTS PER 60': 'pts_per_60',
+        'P PTS PER 60': 'p_pts_per_60',
+        'CF': 'cf',
+        'CA': 'ca',
+        'Corsi Plus Minus': 'corsi_plus_minus',
+        'CF Percentage': 'cf_percentage',
+        'GF': 'gf',
+        'GA': 'ga',
+        'Plus Minus': 'plus_minus',
+        'PDO': 'pdo',
+        'ZSR': 'zsr',
+        'Weighted CF': 'weighted_cf',
+        'Weighted CA': 'weighted_ca',
+        'Weighted Corsi Percentage': 'weighted_corsi_percentage',
+        'REL CF': 'rel_cf'
+    }
+    return input_dict[input]
+
 def generate_scatter_plot(team_input, year_input, x_input, y_input):
     players = get_relevant_players(team_input, year_input)
     return create_graph(players, year_input, x_input, y_input)
-
 
 
 @app.callback(

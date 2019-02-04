@@ -36,7 +36,7 @@ class Season(db.Model):
 class Player(db.Model):
     __tablename__ = 'players'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(), nullable=False)
     age = db.Column(db.Integer)
     position = db.Column(db.String(1), nullable=False)
     cap_hit = db.Column(db.Integer)
