@@ -1,5 +1,6 @@
 from __init__ import db
-from sqlalchemy.sql import func
+import datetime
+from dateutil.relativedelta import relativedelta
 
 
 class League(db.Model):
@@ -31,7 +32,7 @@ class TeamStats(db.Model):
 
 class PlayerStats(db.Model):
     __tablename__ = 'player_stats'
-    age = db.Column(db.Integer)
+    position = db.Column(db.String())
     cap_hit = db.Column(db.Integer)
     height = db.Column(db.String(10))
     weight = db.Column(db.Integer)
@@ -100,60 +101,26 @@ class Season(db.Model):
 class Player(db.Model):
     __tablename__ = 'players'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), nullable=False)
     first_name = db.Column(db.String())
     last_name = db.Column(db.String())
-    alternate_first_name_1 = db.Column(db.String())
-    alternate_first_name_2 = db.Column(db.String())
-    alternate_first_name_3 = db.Column(db.String())
-    alternate_last_name_1 = db.Column(db.String())
-    alternate_last_name_2 = db.Column(db.String())
-    alternate_last_name_3 = db.Column(db.String())
+    full_name = db.Column(db.String(), nullable=False)
+    alt_first_name_1 = db.Column(db.String())
+    alt_first_name_2 = db.Column(db.String())
+    alt_first_name_3 = db.Column(db.String())
+    alt_last_name_1 = db.Column(db.String())
+    alt_last_name_2 = db.Column(db.String())
+    alt_last_name_3 = db.Column(db.String())
     date_of_birth = db.Column(db.Date)
     place_of_birth = db.Column(db.String())
     nationality = db.Column(db.String())
     second_nationality = db.Column(db.String())
-    position = db.Column(db.String(1))
     shoots = db.Column(db.String())
     player_type = db.Column(db.String())
-    position = db.Column(db.String())
 
     seasons = db.relationship('Season', secondary='player_stats')
 
+    def age(self):
+        return relativedelta(datetime.date.today(), self.date_of_birth).years
+
 
 db.create_all()
-
-
-# leagues
-nhl = League(name='NHL')
-ahl = League(name='AHL')
-db.session.add_all([nhl, ahl])
-
-# teams
-rangers = Team(name="New York Rangers")
-sabres = Team(name='Buffalo Sabres')
-wolfpack = Team(name='Hartford Wolfpack')
-americans = Team(name='Rochester Americans')
-teams = [rangers, sabres, wolfpack, americans]
-rangers.affiliates.append(wolfpack)
-sabres.affiliates.append(americans)
-rangers.league = nhl
-sabres.league = nhl
-americans.league = ahl
-db.session.add_all(teams)
-
-
-# seasons
-twenty4_twenty5_season = Season(start_year=2024, end_year=2025)
-db.session.add(twenty4_twenty5_season)
-
-# players
-tuch = Player(name="Alex Tuch")
-db.session.add(tuch)
-
-twenty1_twenty2_season.teams.extend(teams)
-
-tuch_vegas_stats = PlayerStats(player=tuch, season=twenty1_twenty2_season, team=vgk)
-tuch_sabre_stats = PlayerStats(player=tuch, season=twenty1_twenty2_season, team=sabres)
-
-db.session.commit()
