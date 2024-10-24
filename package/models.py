@@ -1,6 +1,7 @@
 from __init__ import db
 from sqlalchemy.sql import func
 
+
 class League(db.Model):
     __tablename__ = 'leagues'
     id = db.Column(db.Integer, primary_key=True)
@@ -9,7 +10,6 @@ class League(db.Model):
     country = db.Column(db.String(30))
     continent = db.Column(db.String(30))
     teams = db.relationship('Team', back_populates='league')
-
 
 class TeamStats(db.Model):
     __tablename__ = 'team_stats'
@@ -28,7 +28,6 @@ class TeamStats(db.Model):
     team = db.relationship('Team', backref='team_stats')
     season_id = db.Column(db.ForeignKey('seasons.id'), primary_key=True)
     season = db.relationship('Season', backref='team_stats')
-
 
 class PlayerStats(db.Model):
     __tablename__ = 'player_stats'
@@ -67,7 +66,6 @@ class PlayerStats(db.Model):
     team_id = db.Column(db.ForeignKey('teams.id'), primary_key=True)
     team = db.relationship('Team', back_populates='players')
 
-
 class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
@@ -90,7 +88,6 @@ class Team(db.Model):
     seasons = db.relationship('Season', secondary='team_stats')
     players = db.relationship('PlayerStats', back_populates='team')
 
-
 class Season(db.Model):
     __tablename__ = 'seasons'
     id = db.Column(db.Integer, primary_key=True)
@@ -99,7 +96,6 @@ class Season(db.Model):
 
     teams = db.relationship('Team', secondary='team_stats')
     players = db.relationship('Player', secondary='player_stats')
-
 
 class Player(db.Model):
     __tablename__ = 'players'
@@ -128,33 +124,36 @@ class Player(db.Model):
 db.create_all()
 
 
-
+# leagues
 nhl = League(name='NHL')
 ahl = League(name='AHL')
-db.session.add(nhl)
-db.session.add(ahl)
+db.session.add_all([nhl, ahl])
 
+# teams
+rangers = Team(name="New York Rangers")
 sabres = Team(name='Buffalo Sabres')
-vgk = Team(name="Vegas Golden Knights")
+wolfpack = Team(name='Hartford Wolfpack')
 americans = Team(name='Rochester Americans')
-db.session.add(sabres)
-db.session.add(vgk)
-db.session.add(americans)
-
-teams = [sabres, vgk, americans]
-
+teams = [rangers, sabres, wolfpack, americans]
+rangers.affiliates.append(wolfpack)
 sabres.affiliates.append(americans)
+rangers.league = nhl
 sabres.league = nhl
-vgk.league = nhl
 americans.league = ahl
-db.session.commit()
+db.session.add_all(teams)
 
-twentyone_twentytwo_season = Season(start_year=2021, end_year=2022)
-db.session.add(twentyone_twentytwo_season)
+
+# seasons
+twenty4_twenty5_season = Season(start_year=2024, end_year=2025)
+db.session.add(twenty4_twenty5_season)
+
+# players
 tuch = Player(name="Alex Tuch")
 db.session.add(tuch)
 
-twentyone_twentytwo_season.teams.extend([sabres, vgk, americans])
+twenty1_twenty2_season.teams.extend(teams)
 
-tuch_vegas_stats = PlayerStats(player=tuch, season=twentyone_twentytwo_season, team=vgk)
-tuch_sabre_stats = PlayerStats(player=tuch, season=twentyone_twentytwo_season, team=sabres)
+tuch_vegas_stats = PlayerStats(player=tuch, season=twenty1_twenty2_season, team=vgk)
+tuch_sabre_stats = PlayerStats(player=tuch, season=twenty1_twenty2_season, team=sabres)
+
+db.session.commit()
