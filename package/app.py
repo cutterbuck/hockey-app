@@ -9,5 +9,6 @@ app.server.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/hockey_ap
 
 
 app.server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.server.app_context().push()
 app.config['suppress_callback_exceptions']=True
 db = SQLAlchemy(app.server)

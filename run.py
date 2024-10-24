@@ -3,5 +3,4 @@ from package.app import app
 
 
 if __name__ == '__main__':
-    app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
-    app.run_server(debug=True)
+    app.run_server(debug = True, dev_tools_ui = True, use_reloader = True, port=8060)

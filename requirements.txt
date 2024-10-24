@@ -1,0 +1,4 @@
+dash
+flask_sqlalchemy
+psycopg2
+python-dateutil

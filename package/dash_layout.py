@@ -1,9 +1,8 @@
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
-from package import app
-from package.models import db, Team, Player, Season, Statistic
+from dash import dcc, html, Input, Output, callback
+from package.app import app
+from package.models import *
 import plotly.graph_objs as go
+
 
 def generate_team_dropdown():
     sorted_teams = sorted(Team.query.all(), key=lambda team: team.name)
@@ -161,19 +160,24 @@ def generate_scatter_plot(team_input, year_input, x_input, y_input):
     return create_graph(players, year_input, x_input, y_input)
 
 
-@app.callback(
-    Output(component_id='nhl_graph_container', component_property='children'),
-    [Input(component_id='team_selector', component_property='value'), Input(component_id='season_selector', component_property='value'), Input(component_id='x_axis_selector', component_property='value'),Input(component_id='y_axis_selector', component_property='value')]
+@callback(
+    Output('nhl_graph_container', 'children'),
+    [Input('team_selector', 'value'), Input('season_selector', 'value'), Input('x_axis_selector', 'value'),Input('y_axis_selector', 'value')]
 )
 def change_table(team_input, season_input, x_input, y_input):
     return generate_scatter_plot(team_input, season_input, x_input, y_input)
 
 
-app.layout = html.Div(children=[
-        html.Div(id='dropdown_container', className='container', children=[
-        html.Div([generate_team_dropdown()]),
-        html.Div([generate_season_dropdown()]),
-        html.Div([generate_x_axis_dropdown()]),
-        html.Div([generate_y_axis_dropdown()])]),
-        html.Div(id='nhl_graph_container')
+app.layout = html.Div(id="hockey-app", style={'marginTop': '5%', 'marginLeft': '5%'}, children=[
+    html.H1("BRIDGEY IS SO FINE!"),
+    html.H2("I\'M GLAD SHE\'S MINE")
+
+    # html.Div(id='dropdown_container', className='container', children=[
+    # html.Div([generate_team_dropdown()]),
+    # html.Div([generate_season_dropdown()]),
+    # html.Div([generate_x_axis_dropdown()]),
+    # html.Div([generate_y_axis_dropdown()])]),
+    # html.Div(id='nhl_graph_container')
 ])
+
+print("\nHockey app is running!\n----------------------")
