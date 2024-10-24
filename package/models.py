@@ -1,4 +1,4 @@
-from __init__ import db
+from package.app import db
 import datetime
 from dateutil.relativedelta import relativedelta
 

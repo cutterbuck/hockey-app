@@ -1,4 +1,6 @@
-from package import app
+from package.app import app
+
+
 
 if __name__ == '__main__':
     app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
