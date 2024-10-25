@@ -171,7 +171,6 @@ def change_table(team_input, season_input, x_input, y_input):
 app.layout = html.Div(id="hockey-app", style={'marginTop': '5%', 'marginLeft': '5%'}, children=[
     html.H1("BRIDGEY IS SO FINE!"),
     html.H2("I\'M GLAD SHE\'S MINE")
-
     # html.Div(id='dropdown_container', className='container', children=[
     # html.Div([generate_team_dropdown()]),
     # html.Div([generate_season_dropdown()]),
