@@ -2,3 +2,4 @@ dash
 flask_sqlalchemy
 psycopg2
 python-dateutil
+nhl-api-py

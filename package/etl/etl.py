@@ -1,13 +1,57 @@
-from teams_data import teams_data, team_colors
-from player_stats import data, cap_hits, ages
-from models import Team, Player, Season, Statistic, db
+from package.models import *
+import requests, json
+from package.data.team_colors import team_colors
+from nhlpy import NHLClient
 
+client = NHLClient()
 
 def create_team_objects():
-    for team in teams_data:
-        team_obj = Team(name=team['name'], abbreviation=team['abbreviation'], city=team['venue']['city'], arena=team['venue']['name'], division=team['division']['name'], conference=team['conference']['name'], official_site=team['officialSiteUrl'])
+    teams = client.teams.teams_info()
+    for team in teams:
+        team_obj = Team(name=team['name'], abbr=team['abbr'], common_name=team['common_name'], logo=team['logo'])
         db.session.add(team_obj)
     db.session.commit()
+
+def create_season_object(season_id):
+    new_season = Season(id=season_id, start_year=int(str(season_id)[0:4]), end_year=int(str(season_id)[-4:]), name=str(season_id)[0:4] + '-' + str(season_id)[-2:])
+    db.session.add(new_season)
+    print('Adding Season() for', new_season.name)
+    db.session.commit()
+    return new_season
+
+def get_standings(past_season_id=None):
+    if past_season_id:
+        standings = client.standings.get_standings(season=past_season_id)
+    else:
+        standings = client.standings.get_standings()
+
+    for team in standings['standings']:
+        team_obj = Team.query.filter(Team.name == team['teamName']['default']).first()
+        season_obj = Season.query.filter(Season.id == team['seasonId']).first()
+
+        if bool(season_obj) == False:
+            season_obj = create_season_object(team['seasonId'])
+        if season_obj not in team_obj.seasons:
+            team_obj.seasons.append(season_obj)
+        team_stats_obj = TeamStats.query.filter(TeamStats.team == team_obj, TeamStats.season == season_obj).first()
+        team_stats_obj.games_played = team['gamesPlayed']
+        team_stats_obj.wins = team['wins']
+        team_stats_obj.losses = team['losses']
+        team_stats_obj.ties = team['ties']
+        team_stats_obj.shootout_wins = team['shootoutWins']
+        team_stats_obj.points = team['points']
+        team_stats_obj.goals_forward = team['goalFor']
+        team_stats_obj.goals_against = team['goalAgainst']
+        team_stats_obj.l10_wins = team['l10Wins']
+        team_stats_obj.regulation_wins = team['regulationWins']
+        team_stats_obj.regulation_plut_ot_wins = team['regulationPlusOtWins']
+        team_stats_obj.goal_differential = team['goalDifferential']
+        db.session.add(team_stats_obj)
+        print("Updating standings for", team_obj.name)
+    db.session.commit()
+# create_team_objects()
+# get_standings()
+# import pdb; pdb.set_trace()
 
 def create_player_objects():
     for player in data:
@@ -77,5 +121,4 @@ def add_all_to_db():
     add_cap_hit_info()
     add_age_info()
     add_colors_to_teams()
-
-add_all_to_db()
+# add_all_to_db()

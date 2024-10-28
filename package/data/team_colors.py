@@ -1,13 +1,3 @@
-import requests, json
-
-
-response = requests.get('https://statsapi.web.nhl.com/api/v1/teams')
-teams_data = json.loads(response.content)['teams']
-
-
-
-# team colors
-
 team_colors = {
     'ANA': {'primary': 'rgb(252,76,2)', 'secondary': 'rgb(176,152,98)'},
     'ARI': {'primary': 'rgb(140,38,51)', 'secondary': 'rgb(226,214,181)'},

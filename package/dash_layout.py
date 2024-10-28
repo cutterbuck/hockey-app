@@ -1,4 +1,4 @@
-from dash import dcc, html, Input, Output, callback
+from dash import dcc, html, Input, Output, callback, dash_table
 from package.app import app
 from package.models import *
 import plotly.graph_objs as go
@@ -168,9 +168,40 @@ def change_table(team_input, season_input, x_input, y_input):
     return generate_scatter_plot(team_input, season_input, x_input, y_input)
 
 
+
+
+def return_rows_background_color(color_index):
+    if color_index % 2 == 1:
+        return 'rgb(221,230,240)'
+    elif color_index % 2 == 0:
+        return 'rgb(255,255,255)'
+
+def create_standings_table():
+    standings_data = db.session.query(Team.name, TeamStats.games_played, TeamStats.wins, TeamStats.losses, TeamStats.points, TeamStats.regulation_wins, TeamStats.regulation_plut_ot_wins, TeamStats.goals_for, TeamStats.goals_against, TeamStats.goal_differential).join(TeamStats.team).join(TeamStats.season).filter(Season.id == 20242025).order_by(TeamStats.points.desc()).all()
+    columns = ["Team" , "GP", "W", "L", "PTS", "RW", "ROW", "GF", "GA", "DIFF"]
+    table_rows = [html.Tr(id='header-row', children=[html.Th(children=column) for column in columns])]
+
+    color_index = 0
+    for (team, gp, wins, losses, pts, rw, row, gf, ga, diff) in standings_data:
+        color_index += 1
+        row_cells = [
+            html.Td(team),
+            html.Td(gp),
+            html.Td(wins),
+            html.Td(losses),
+            html.Td(pts),
+            html.Td(rw),
+            html.Td(row),
+            html.Td(gf),
+            html.Td(ga),
+            html.Td(diff)
+        ]
+        table_rows.append(html.Tr(id=team+'-row', children=row_cells, style={'background-color': return_rows_background_color(color_index)}))
+    return html.Table(id='nhl-standings', children=table_rows)
+
 app.layout = html.Div(id="hockey-app", style={'marginTop': '5%', 'marginLeft': '5%'}, children=[
-    html.H1("BRIDGEY IS SO FINE!"),
-    html.H2("I\'M GLAD SHE\'S MINE")
+    create_standings_table()
+
     # html.Div(id='dropdown_container', className='container', children=[
     # html.Div([generate_team_dropdown()]),
     # html.Div([generate_season_dropdown()]),
