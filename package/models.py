@@ -12,17 +12,32 @@ class League(db.Model):
     continent = db.Column(db.String(30))
     teams = db.relationship('Team', back_populates='league')
 
+class Conference(db.Model):
+    __tablename__ = 'conferences'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+    divisions = db.relationship('Division', back_populates='conference')
+
+class Division(db.Model):
+    __tablename__ = 'divisions'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+
+    conference_id = db.Column(db.Integer, db.ForeignKey('conferences.id'))
+    conference = db.relationship('Conference', back_populates='divisions')
+    team_standings = db.relationship('TeamStandings', back_populates='division')
+
 
 class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), nullable=False)
     common_name = db.Column(db.String(40), nullable=False)
-    abbr = db.Column(db.String(5), nullable=False)
-    logo = db.Column(db.String(75), nullable=False)
+    abbr = db.Column(db.String(5))
+    logo = db.Column(db.String(75))
     primary_color = db.Column(db.String(30))
     secondary_color = db.Column(db.String(30))
-    # city = db.Column(db.String(30))
+    location = db.Column(db.String(30), nullable=False)
     # arena = db.Column(db.String(40))
     # division = db.Column(db.String(20))
     # conference = db.Column(db.String(20))
@@ -35,18 +50,18 @@ class Team(db.Model):
     league_id = db.Column(db.Integer, db.ForeignKey('leagues.id'))
     league = db.relationship('League', back_populates='teams')
 
-    seasons = db.relationship('Season', secondary='team_stats')
+    seasons = db.relationship('Season', secondary='team_standings')
     players = db.relationship('Player', secondary='player_stats')
 
 
 class Season(db.Model):
     __tablename__ = 'seasons'
     id = db.Column(db.Integer, primary_key=True)
-    start_year = db.Column(db.Integer, nullable=False)
-    end_year = db.Column(db.Integer, nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
     name = db.Column(db.String(7), nullable=False)
 
-    teams = db.relationship('Team', secondary='team_stats', overlaps='seasons,players')
+    teams = db.relationship('Team', secondary='team_standings', overlaps='seasons,players')
     players = db.relationship('Player', secondary='player_stats', overlaps='seasons,players')
 
 
@@ -74,8 +89,8 @@ class Player(db.Model):
         return relativedelta(datetime.date.today(), self.date_of_birth).years
 
 
-class TeamStats(db.Model):
-    __tablename__ = 'team_stats'
+class TeamStandings(db.Model):
+    __tablename__ = 'team_standings'
     id = db.Column(db.Integer, primary_key=True)
     games_played = db.Column(db.Integer)
     wins = db.Column(db.Integer)
@@ -91,9 +106,11 @@ class TeamStats(db.Model):
     regulation_plut_ot_wins = db.Column(db.Integer)
 
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
-    team = db.relationship("Team", backref=db.backref("team_stats", cascade="all, delete-orphan", overlaps="seasons,teams"), overlaps="seasons,teams")
+    team = db.relationship("Team", backref=db.backref("team_standings", cascade="all, delete-orphan", overlaps="seasons,teams"), overlaps="seasons,teams")
     season_id = db.Column(db.Integer, db.ForeignKey('seasons.id'))
-    season = db.relationship("Season", backref=db.backref("team_stats", cascade="all, delete-orphan", overlaps="seasons,teams"), overlaps="seasons,teams")
+    season = db.relationship("Season", backref=db.backref("team_standings", cascade="all, delete-orphan", overlaps="seasons,teams"), overlaps="seasons,teams")
+    division_id = db.Column(db.Integer, db.ForeignKey('divisions.id'))
+    division = db.relationship('Division', back_populates='team_standings')
 
 
 class PlayerStats(db.Model):

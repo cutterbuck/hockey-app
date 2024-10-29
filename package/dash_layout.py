@@ -177,7 +177,7 @@ def return_rows_background_color(color_index):
         return 'rgb(255,255,255)'
 
 def create_standings_table():
-    standings_data = db.session.query(Team.name, TeamStats.games_played, TeamStats.wins, TeamStats.losses, TeamStats.points, TeamStats.regulation_wins, TeamStats.regulation_plut_ot_wins, TeamStats.goals_for, TeamStats.goals_against, TeamStats.goal_differential).join(TeamStats.team).join(TeamStats.season).filter(Season.id == 20242025).order_by(TeamStats.points.desc()).all()
+    standings_data = db.session.query(Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.id == 20242025).order_by(TeamStandings.points.desc()).all()
     columns = ["Team" , "GP", "W", "L", "PTS", "RW", "ROW", "GF", "GA", "DIFF"]
     table_rows = [html.Tr(id='header-row', children=[html.Th(children=column) for column in columns])]
 
