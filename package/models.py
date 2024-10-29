@@ -98,6 +98,7 @@ class TeamStandings(db.Model):
     ties = db.Column(db.Integer)
     shootout_wins = db.Column(db.Integer)
     points = db.Column(db.Integer)
+    points_percentage = db.Column(db.Float)
     goals_for = db.Column(db.Integer)
     goals_against = db.Column(db.Integer)
     goal_differential = db.Column(db.Integer)
