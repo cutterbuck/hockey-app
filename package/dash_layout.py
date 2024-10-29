@@ -3,6 +3,7 @@ from package.app import app
 from package.models import *
 import plotly.graph_objs as go
 import datetime
+from PIL import Image
 
 
 
@@ -37,15 +38,19 @@ def goal_diff_color(value):
     elif value == 0:
         return "black"
 
+
 def create_standings_table(season_input):
     standings_data = db.session.query(Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).order_by(TeamStandings.points.desc()).all()
-    columns = ["Team" , "GP", "W", "L", "PTS", "P%", "RW", "ROW", "GF", "GA", "DIFF"]
+    columns = ["", "Team" , "GP", "W", "L", "PTS", "P%", "RW", "ROW", "GF", "GA", "DIFF"]
     table_rows = [html.Tr(id='header-row', children=[html.Th(children=column) for column in columns])]
 
+    image = Image.open(url)
+    image.draft('RGB', (1008, 756))
     color_index = 0
     for (team, gp, wins, losses, pts, pts_pctg, rw, row, gf, ga, diff) in standings_data:
         color_index += 1
         row_cells = [
+            html.Td(html.Img(src=image, style={'width': "50px", 'height': "30px"})),
             html.Td(team),
             html.Td(gp),
             html.Td(wins),

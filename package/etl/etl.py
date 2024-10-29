@@ -1,5 +1,9 @@
 from package.models import *
 from package.data.misc_data import *
+import requests
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
+
 from nhlpy import NHLClient
 client = NHLClient()
 
@@ -60,14 +64,23 @@ def create_team_objects():
     teams = client.teams.teams_info()
     for team in teams:
         team_obj = Team.query.filter(Team.name==team['name']).first()
-        team_obj.abbr == team['abbr']
-        team_obj.logo == team['logo']
+        team_obj.abbr = team['abbr']
+        import cairosvg
+        import pdb; pdb.set_trace()
+        svg_file = requests.get(team['logo']).content
+        drawing = svg2rlg(svg_file)
+        renderPM.drawToFile(drawing, f"package/assets/logos/{team_obj.abbr}.png", fmt="PNG")
+
+        urllib.request.urlretrieve(team['logo'], f"package/assets/logos/{team_obj.abbr}.svg")
+        team_obj.logo = f"package/assets/logos/{team_obj.abbr}.svg"
         db.session.add(team_obj)
     db.session.commit()
 
     coyotes = Team.query.filter(Team.name=='Arizona Coyotes').first()
-    coyotes.abbr = 'Ari'
-    coyotes.logo = 'https://assets.nhle.com/logos/nhl/svg/ARI_light.svg'
+    coyotes.abbr = 'ARI'
+    urllib.request.urlretrieve('https://assets.nhle.com/logos/nhl/svg/ARI_light.svg', f"package/assets/logos/{coyotes.abbr}.svg")
+    coyotes.logo = f"package/assets/logos/{coyotes.abbr}.svg"
+
     db.session.add(coyotes)
     db.session.commit()
 # create_team_objects()
@@ -104,7 +117,7 @@ def get_standings(prior_seasons_end_date=None):
         db.session.add(team_stats_obj)
         print("Updating", season_obj.name, "standings for", team_obj.name)
     db.session.commit()
-get_standings('2023-04-14')
-get_standings('2024-04-18')
-get_standings()
-import pdb; pdb.set_trace()
+# get_standings('2023-04-14')
+# get_standings('2024-04-18')
+# get_standings()
+# import pdb; pdb.set_trace()
