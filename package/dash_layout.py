@@ -38,32 +38,34 @@ def goal_diff_color(value):
     elif value == 0:
         return "black"
 
+def style_diff(value):
+    return "+"+str(value) if value > 0 else str(value)
 
 def create_standings_table(season_input):
-    standings_data = db.session.query(Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).order_by(TeamStandings.points.desc()).all()
-    columns = ["", "Team" , "GP", "W", "L", "PTS", "P%", "RW", "ROW", "GF", "GA", "DIFF"]
+    standings_data = db.session.query(Team.logo, Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).order_by(TeamStandings.points.desc()).all()
+    columns = ["Team", "GP", "W", "L", "PTS", "P%", "RW", "ROW", "GF", "GA", "DIFF"]
     table_rows = [html.Tr(id='header-row', children=[html.Th(children=column) for column in columns])]
 
-    image = Image.open(url)
-    image.draft('RGB', (1008, 756))
     color_index = 0
-    for (team, gp, wins, losses, pts, pts_pctg, rw, row, gf, ga, diff) in standings_data:
+    for (logo, team, gp, wins, losses, pts, pts_pctg, rw, row, gf, ga, diff) in standings_data:
         color_index += 1
         row_cells = [
-            html.Td(html.Img(src=image, style={'width': "50px", 'height': "30px"})),
-            html.Td(team),
-            html.Td(gp),
-            html.Td(wins),
-            html.Td(losses),
-            html.Td(pts),
-            html.Td(pts_pctg),
-            html.Td(rw),
-            html.Td(row),
-            html.Td(gf),
-            html.Td(ga),
-            html.Td(diff, style={'color': goal_diff_color(diff)})
+            html.Td(html.Div(children=[
+                    html.Img(src=logo, style={'width': "36px", 'height': "24px", 'verticalAlign': 'middle', 'paddingRight': '5px'}),
+                    html.Div(team, style={'display': 'inline-block'})
+                ]), style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(gp, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(wins, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(losses, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(pts, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(pts_pctg, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(rw, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(row, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(gf, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(ga, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+            html.Td(style_diff(diff), style={'color': goal_diff_color(diff), 'paddingTop': '5px', 'paddingBottom': '5px'})
         ]
-        table_rows.append(html.Tr(id=team+'-row', children=row_cells, style={'background-color': return_rows_background_color(color_index)}))
+        table_rows.append(html.Tr(id=team+'-row', children=row_cells, style={'background-color': return_rows_background_color(color_index), 'height': '50px'}))
     return html.Table(id='nhl-standings', children=table_rows)
 
 @callback(Output('standings-output', 'children'),

@@ -65,21 +65,13 @@ def create_team_objects():
     for team in teams:
         team_obj = Team.query.filter(Team.name==team['name']).first()
         team_obj.abbr = team['abbr']
-        import cairosvg
-        import pdb; pdb.set_trace()
-        svg_file = requests.get(team['logo']).content
-        drawing = svg2rlg(svg_file)
-        renderPM.drawToFile(drawing, f"package/assets/logos/{team_obj.abbr}.png", fmt="PNG")
-
-        urllib.request.urlretrieve(team['logo'], f"package/assets/logos/{team_obj.abbr}.svg")
-        team_obj.logo = f"package/assets/logos/{team_obj.abbr}.svg"
+        team_obj.logo = team['logo']
         db.session.add(team_obj)
     db.session.commit()
 
     coyotes = Team.query.filter(Team.name=='Arizona Coyotes').first()
     coyotes.abbr = 'ARI'
-    urllib.request.urlretrieve('https://assets.nhle.com/logos/nhl/svg/ARI_light.svg', f"package/assets/logos/{coyotes.abbr}.svg")
-    coyotes.logo = f"package/assets/logos/{coyotes.abbr}.svg"
+    coyotes.logo = 'https://assets.nhle.com/logos/nhl/svg/ARI_light.svg'
 
     db.session.add(coyotes)
     db.session.commit()
@@ -104,7 +96,7 @@ def get_standings(prior_seasons_end_date=None):
         team_stats_obj.ties = team['ties']
         team_stats_obj.shootout_wins = team['shootoutWins']
         team_stats_obj.points = team['points']
-        team_stats_obj.points_percentage = round(team['winPctg'], 3)
+        team_stats_obj.points_percentage = round(team['pointPctg'], 3)
         team_stats_obj.goals_for = team['goalFor']
         team_stats_obj.goals_against = team['goalAgainst']
         team_stats_obj.goal_differential = team['goalDifferential']
