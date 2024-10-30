@@ -51,19 +51,19 @@ def create_standings_table(season_input):
         color_index += 1
         row_cells = [
             html.Td(html.Div(children=[
-                    html.Img(src=logo, style={'width': "36px", 'height': "24px", 'verticalAlign': 'middle', 'paddingRight': '5px'}),
+                    html.Img(src=logo, style={'width': "36px", 'height': "24px", 'verticalAlign': 'middle', 'paddingRight': '8px'}),
                     html.Div(team, style={'display': 'inline-block'})
                 ]), style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(gp, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(wins, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(losses, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(pts, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(pts_pctg, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(rw, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(row, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(gf, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(ga, style={'paddingTop': '5px', 'paddingBottom': '5px'}),
-            html.Td(style_diff(diff), style={'color': goal_diff_color(diff), 'paddingTop': '5px', 'paddingBottom': '5px'})
+            html.Td(gp, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(wins, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(losses, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(pts, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(pts_pctg, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(rw, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(row, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(gf, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(ga, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
+            html.Td(style_diff(diff), style={'color': goal_diff_color(diff), 'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'})
         ]
         table_rows.append(html.Tr(id=team+'-row', children=row_cells, style={'background-color': return_rows_background_color(color_index), 'height': '50px'}))
     return html.Table(id='nhl-standings', children=table_rows)
