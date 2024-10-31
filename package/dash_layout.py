@@ -44,7 +44,7 @@ def goal_diff_color(value):
 def style_diff(value):
     return "+"+str(value) if value > 0 else str(value)
 
-def create_standings_table(standings_data, title):
+def create_standings_table(standings_data):
     columns = ["Team", "GP", "W", "L", "PTS", "P%", "RW", "ROW", "GF", "GA", "DIFF"]
     table_rows = [html.Tr(id='header-row', children=[html.Th(children=column) for column in columns])]
 
@@ -68,10 +68,8 @@ def create_standings_table(standings_data, title):
             html.Td(style_diff(diff), style={'color': goal_diff_color(diff), 'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'})
         ]
         table_rows.append(html.Tr(id=team+'-row', children=row_cells, style={'background-color': return_rows_background_color(color_index), 'height': '50px'}))
-    return html.Div(children=[
-            html.H4(title, style={'marginTop': '20px', 'marginBottom': '0px'}),
-            html.Table(id='nhl-standings', children=table_rows)
-        ])
+
+    return html.Table(id='nhl-standings', children=table_rows)
 
 def generate_standings_type_tabs():
     return html.Div([
@@ -90,25 +88,42 @@ def change_table(season_input, standings_type_input):
 
     if standings_type_input == "league":
         standings_data = db.session.query(Team.logo, Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).order_by(TeamStandings.points_percentage.desc()).all()
-        standings_output_div.children.append(create_standings_table(standings_data, "National Hockey League"))
+        title = html.H4("National Hockey League", style={'marginTop': '20px', 'marginBottom': '0px'})
+        standings_output_div.children.append(html.Div(children=[title, create_standings_table(standings_data)]))
 
     elif standings_type_input == "conference":
         conference_objs = Conference.query.order_by(Conference.id).all()
         tables = []
         for conference in conference_objs:
             standings_data = db.session.query(Team.logo, Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).join(TeamStandings.division).join(Division.conference).filter(Conference.name == conference.name).order_by(TeamStandings.points_percentage.desc()).all()
-            standings_output_div.children.append(create_standings_table(standings_data, conference.name))
+            title = html.H4(conference.name, style={'marginTop': '20px', 'marginBottom': '0px'})
+            standings_output_div.children.append(html.Div(children=[title, create_standings_table(standings_data)]))
 
     elif standings_type_input == "division":
         division_objs = Division.query.order_by(Division.id).all()
         tables = []
         for division in division_objs:
             standings_data = db.session.query(Team.logo, Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).join(TeamStandings.division).filter(Division.name == division.name).order_by(TeamStandings.points_percentage.desc()).all()
-            standings_output_div.children.append(create_standings_table(standings_data, division.name))
+            title = html.H4(division.name, style={'marginTop': '20px', 'marginBottom': '0px'})
+            standings_output_div.children.append(html.Div(children=[title, create_standings_table(standings_data)]))
 
     elif standings_type_input == "wild card":
-        standings_output_div.children.append(create_standings_table([], "Under construction..."))
+        conference_objs = Conference.query.order_by(Conference.id).all()
+        tables = []
+        for conference in conference_objs:
+            title = html.H4(conference.name, style={'marginTop': '20px', 'marginBottom': '0px'})
+            standings_output_div.children.append(html.Div(children=[title]))
 
+            for division in conference.divisions:
+                standings_data = db.session.query(Team.logo, Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).join(TeamStandings.division).filter(Division.name == division.name).order_by(TeamStandings.points_percentage.desc()).all()[0:3]
+                sub_title = html.H6(division.name, style={'marginTop': '20px', 'marginBottom': '0px'})
+                standings_output_div.children.extend([sub_title, create_standings_table(standings_data)])
+
+                if division == conference.divisions[-1]:
+                    standings_data = [db.session.query(Team.logo, Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).join(TeamStandings.division).filter(Division.name == division.name).order_by(TeamStandings.points_percentage.desc()).all()[3:] for division in conference.divisions]
+                    rest_of_conf_standings_data = [x for xs in standings_data for x in xs]
+                    sub_title = html.H6("Wild Card", style={'marginTop': '20px', 'marginBottom': '0px'})
+                    standings_output_div.children.extend([sub_title, create_standings_table(rest_of_conf_standings_data)])
     return standings_output_div
 
 
