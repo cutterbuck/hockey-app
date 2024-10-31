@@ -3,7 +3,6 @@ from package.app import app
 from package.models import *
 import plotly.graph_objs as go
 import datetime
-from PIL import Image
 
 
 
