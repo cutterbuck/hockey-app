@@ -28,6 +28,8 @@ def create_seasons_dd():
         options=seasons_options,
         value=Season.query.get(value_szn_id).name,
         className='three columns',
+        persistence=True,
+        persistence_type='session',
         clearable=False
     )
 
@@ -42,7 +44,8 @@ def goal_diff_color(value):
 def style_diff(value):
     return "+"+str(value) if value > 0 else str(value)
 
-def create_standings_table(season_input):
+def create_standings_table(season_input, standings_type_input):
+    print('standings_type_input', standings_type_input)
     standings_data = db.session.query(Team.logo, Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).order_by(TeamStandings.points.desc()).all()
     columns = ["Team", "GP", "W", "L", "PTS", "P%", "RW", "ROW", "GF", "GA", "DIFF"]
     table_rows = [html.Tr(id='header-row', children=[html.Th(children=column) for column in columns])]
@@ -71,20 +74,20 @@ def create_standings_table(season_input):
 
 def generate_standings_type_tabs():
     return html.Div([
-        dcc.Tabs(id="standings-type-tabs", persistence=True, persistence_type='memory', value='tab-1', style={'font-size':'small'}, children=[
-            dcc.Tab(label='Division', value='tab-1'),
-            dcc.Tab(label='Wild Card', value='tab-2'),
-            dcc.Tab(label='Conference', value='tab-3'),
-            dcc.Tab(label='League', value='tab-4')
+        dcc.Tabs(id="standings-type-tabs", persistence=True, persistence_type='session', value='division', style={'font-size':'small'}, children=[
+            dcc.Tab(label='Division', value='division'),
+            dcc.Tab(label='Wild Card', value='wild card'),
+            dcc.Tab(label='Conference', value='conference'),
+            dcc.Tab(label='League', value='league')
         ]),
     ], style={'width': '50%', 'height': '50px', 'paddingTop': '2%', 'paddingBottom': '2%'})
 
 @callback(Output('standings-output', 'children'),
-    [Input('seasons-dropdown', 'value')])
-def change_table(season_input):
-    return create_standings_table(season_input)
+    [Input('seasons-dropdown', 'value'), Input('standings-type-tabs', 'value')])
+def change_table(season_input, standings_type_input):
+    return create_standings_table(season_input, standings_type_input)
 
-app.layout = html.Div(id="hockey-app", style={'marginTop': '5%', 'marginLeft': '5%'}, children=[
+app.layout = html.Div(id="hockey-app", style={'marginTop': '3%', 'marginLeft': '5%'}, children=[
     html.Div(id='seasons-dd-div', style={'display': 'grid', 'width': '75%'}, children=create_seasons_dd()),
     generate_standings_type_tabs(),
     html.Div(id='standings-output'),
