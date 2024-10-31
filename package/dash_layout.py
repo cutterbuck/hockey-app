@@ -27,7 +27,8 @@ def create_seasons_dd():
         id='seasons-dropdown',
         options=seasons_options,
         value=Season.query.get(value_szn_id).name,
-        className='three columns'
+        className='three columns',
+        clearable=False
     )
 
 def goal_diff_color(value):
@@ -68,13 +69,24 @@ def create_standings_table(season_input):
         table_rows.append(html.Tr(id=team+'-row', children=row_cells, style={'background-color': return_rows_background_color(color_index), 'height': '50px'}))
     return html.Table(id='nhl-standings', children=table_rows)
 
+def generate_standings_type_tabs():
+    return html.Div([
+        dcc.Tabs(id="standings-type-tabs", persistence=True, persistence_type='memory', value='tab-1', style={'font-size':'small'}, children=[
+            dcc.Tab(label='Division', value='tab-1'),
+            dcc.Tab(label='Wild Card', value='tab-2'),
+            dcc.Tab(label='Conference', value='tab-3'),
+            dcc.Tab(label='League', value='tab-4')
+        ]),
+    ], style={'width': '50%', 'height': '50px', 'paddingTop': '2%', 'paddingBottom': '2%'})
+
 @callback(Output('standings-output', 'children'),
     [Input('seasons-dropdown', 'value')])
 def change_table(season_input):
     return create_standings_table(season_input)
 
 app.layout = html.Div(id="hockey-app", style={'marginTop': '5%', 'marginLeft': '5%'}, children=[
-    create_seasons_dd(),
+    html.Div(id='seasons-dd-div', style={'display': 'grid', 'width': '75%'}, children=create_seasons_dd()),
+    generate_standings_type_tabs(),
     html.Div(id='standings-output'),
 ])
 
