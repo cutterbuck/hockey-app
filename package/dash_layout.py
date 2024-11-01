@@ -79,7 +79,7 @@ def create_standings_table(standings_data, title=None, sub_title=None):
 
 def generate_standings_type_tabs():
     return html.Div([
-        dcc.Tabs(id="standings-type-tabs", persistence=True, persistence_type='session', style={'font-size':'small'}, children=[
+        dcc.Tabs(id="standings-type-tabs", persistence=True, persistence_type='session', value='division', style={'font-size':'small'}, children=[
             dcc.Tab(label='Division', value='division'),
             dcc.Tab(label='Wild Card', value='wild card'),
             dcc.Tab(label='Conference', value='conference'),
