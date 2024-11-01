@@ -107,5 +107,5 @@ def get_standings(prior_seasons_end_date=None):
     db.session.commit()
 # get_standings('2023-04-14')
 # get_standings('2024-04-18')
-get_standings()
-import pdb; pdb.set_trace()
+# get_standings()
+# import pdb; pdb.set_trace()
