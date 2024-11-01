@@ -1,9 +1,5 @@
 from package.models import *
 from package.data.misc_data import *
-import requests
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
-
 from nhlpy import NHLClient
 client = NHLClient()
 
