@@ -12,7 +12,7 @@ def print_hello_world():
 def start_running_schedules():
     now = datetime.now()
     sched = BackgroundScheduler(daemon=True)
-    trigger = CronTrigger(year="*", month="*", day="*", hour="10", minute="35", second="0")
-    # sched.add_job(get_standings, trigger=trigger, start_date=now, timezone=pytz.timezone("America/New_York"))
-    sched.add_job(print_hello_world, 'interval', minutes=1, start_date=now, end_date=datetime(now.date().year, now.date().month, now.date().day, 23, 59), timezone=pytz.timezone("America/New_York"))
+    trigger = CronTrigger(year="*", month="*", day="*", hour="11", minute="0", second="0")
+    sched.add_job(get_standings, trigger=trigger, start_date=now, timezone=pytz.timezone("America/New_York"))
+    # sched.add_job(print_hello_world, 'interval', minutes=1, start_date=now, end_date=datetime(now.date().year, now.date().month, now.date().day, 23, 59), timezone=pytz.timezone("America/New_York"))
     sched.start()
