@@ -9,6 +9,8 @@ app = dash.Dash(__name__, url_base_pathname='/', title='Hockey App Demo')
 # remote db
 app.server.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('hockey_app_uri')
 
+
+
 app.config['suppress_callback_exceptions']=True
 db = SQLAlchemy(app.server)
 app.server.app_context().push()
