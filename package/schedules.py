@@ -2,17 +2,14 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime
 import pytz
-from package.etl.etl import get_standings
+from package.etl.etl import run_standings_auto_update
 
 
-
-def print_hello_world():
-    print('Hello world! Time is', datetime.now())
 
 def start_running_schedules():
+    print("Starting schedules")
     now = datetime.now()
     sched = BackgroundScheduler(daemon=True)
-    trigger = CronTrigger(year="*", month="*", day="*", hour="11", minute="0", second="0")
-    sched.add_job(get_standings, trigger=trigger, start_date=now, timezone=pytz.timezone("America/New_York"))
-    # sched.add_job(print_hello_world, 'interval', minutes=1, start_date=now, end_date=datetime(now.date().year, now.date().month, now.date().day, 23, 59), timezone=pytz.timezone("America/New_York"))
+    trigger = CronTrigger(year="*", month="*", day="*", hour="13", minute="55", second="0")
+    sched.add_job(run_standings_auto_update, trigger=trigger, start_date=now, timezone=pytz.timezone("America/New_York"))
     sched.start()

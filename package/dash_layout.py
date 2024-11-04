@@ -6,7 +6,6 @@ import datetime
 
 
 
-
 def return_rows_background_color(color_index):
     if color_index % 2 == 1:
         return 'rgb(245,245,245)'

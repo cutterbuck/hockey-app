@@ -5,3 +5,4 @@ python-dateutil
 nhl-api-py
 waitress
 apscheduler
+flask_apscheduler

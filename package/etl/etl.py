@@ -105,6 +105,13 @@ def get_standings(prior_seasons_end_date=None):
         db.session.add(team_stats_obj)
         print("Updating", season_obj.name, "standings for", team_obj.name)
     db.session.commit()
+
+def run_standings_auto_update():
+    from package.app import app
+    with app.server.app_context():
+        get_standings()
+
+
 # get_standings('2023-04-14')
 # get_standings('2024-04-18')
 # get_standings()
