@@ -4,3 +4,4 @@ psycopg2
 python-dateutil
 nhl-api-py
 waitress
+apscheduler
