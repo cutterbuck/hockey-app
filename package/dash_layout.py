@@ -53,7 +53,7 @@ def create_standings_table(standings_data, title=None, sub_title=None):
             html.Td(html.Div(children=[
                     html.Img(src=logo, style={'width': "36px", 'height': "24px", 'verticalAlign': 'middle', 'paddingRight': '8px'}),
                     html.Div(team, style={'display': 'inline-block'})
-                ]), style={'paddingTop': '5px', 'paddingBottom': '5px'}),
+                ]), style={'paddingTop': '5px', 'paddingBottom': '5px', 'width': '215px'}),
             html.Td(gp, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
             html.Td(wins, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
             html.Td(losses, style={'paddingTop': '5px', 'paddingBottom': '5px', 'textAlign': 'center'}),
@@ -84,7 +84,7 @@ def generate_standings_type_tabs():
             dcc.Tab(label='Conference', value='conference'),
             dcc.Tab(label='League', value='league')
         ]),
-    ], style={'width': '50%', 'height': '40px', 'paddingTop': '1%', 'paddingBottom': '1%'})
+    ], style={'maxWidth': '48%', 'paddingTop': '2%', 'clear': 'both'})
 
 @callback(Output('standings-output', 'children'),
     [Input('seasons-dropdown', 'value'), Input('standings-type-tabs', 'value')])
@@ -120,11 +120,11 @@ def change_table(season_input, standings_type_input):
                     rest_of_conf_standings_data = [x for xs in standings_data for x in xs]
                     standings_tables.append(create_standings_table(rest_of_conf_standings_data, None, "Wild Card"))
 
-    return html.Div(id='standings-tables-output', children=standings_tables)
+    return html.Div(id='standings-tables-output', children=standings_tables, style={'paddingTop': '2%', 'clear': 'both'})
 
 
-app.layout = html.Div(id="hockey-app", style={'marginTop': '3%', 'marginLeft': '5%'}, children=[
-    html.Div(id='seasons-dd-div', style={'display': 'grid', 'width': '75%'}, children=create_seasons_dd()),
+app.layout = html.Div(id="hockey-app", style={'marginTop': '0%', 'marginLeft': '0%', 'position': 'relative', 'left': '5vw', 'top': '3vh', 'height': '100vh', 'width': '100vw'}, children=[
+    html.Div(id='seasons-dd-div', style={'width': '75%', 'clear': 'both'}, children=create_seasons_dd()),
     generate_standings_type_tabs(),
     html.Div(id='standings-output'),
 ])
