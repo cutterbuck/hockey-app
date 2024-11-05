@@ -1,4 +1,3 @@
-print("1")
 from package import dash_layout
 
 

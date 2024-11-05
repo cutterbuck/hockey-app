@@ -1,4 +1,4 @@
-Player,Tm,Salary,Cap Hit
+player,team,salary,cap_hit
 John Tavares,TOR,"15,900,000","11,000,000"
 Carey Price,MTL,"15,000,000","10,500,000"
 Connor McDavid,EDM,"15,000,000","12,500,000"

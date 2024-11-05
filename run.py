@@ -2,8 +2,6 @@ from package.app import app
 from package.schedules import start_running_schedules
 
 
-print("3")
-
 
 if __name__ == '__main__':
     with app.server.app_context():
