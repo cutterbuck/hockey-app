@@ -84,7 +84,7 @@ def generate_standings_type_tabs():
             dcc.Tab(label='Conference', value='conference'),
             dcc.Tab(label='League', value='league')
         ]),
-    ], style={'maxWidth': '48%', 'paddingTop': '2%', 'clear': 'both'})
+    ], style={'minWidth': '48%', 'maxWidth': '500px','paddingTop': '2%', 'clear': 'both'})
 
 @callback(Output('standings-output', 'children'),
     [Input('seasons-dropdown', 'value'), Input('standings-type-tabs', 'value')])
@@ -118,6 +118,7 @@ def change_table(season_input, standings_type_input):
                 if division == conference.divisions[-1]:
                     standings_data = [db.session.query(Team.logo, Team.name, TeamStandings.games_played, TeamStandings.wins, TeamStandings.losses, TeamStandings.points, TeamStandings.points_percentage, TeamStandings.regulation_wins, TeamStandings.regulation_plut_ot_wins, TeamStandings.goals_for, TeamStandings.goals_against, TeamStandings.goal_differential).join(TeamStandings.team).join(TeamStandings.season).filter(Season.name == season_input).join(TeamStandings.division).filter(Division.name == division.name).order_by(TeamStandings.points_percentage.desc()).all()[3:] for division in conference.divisions]
                     rest_of_conf_standings_data = [x for xs in standings_data for x in xs]
+                    rest_of_conf_standings_data.sort(key=lambda x: x[6])
                     standings_tables.append(create_standings_table(rest_of_conf_standings_data, None, "Wild Card"))
 
     return html.Div(id='standings-tables-output', children=standings_tables, style={'paddingTop': '2%', 'clear': 'both'})
