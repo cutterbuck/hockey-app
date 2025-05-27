@@ -54,6 +54,8 @@ def create_team_objects():
         team_obj = Team(name=team['fullName'], common_name=team['teamCommonName'], location=team['teamPlaceName'])
         db.session.add(team_obj)
         print("Adding the", team_obj.name)
+    uhc = Team(name='Utah Hockey Club', common_name='Utah Hockey Club', location="Utah")
+    db.session.add(uhc)
     db.session.commit()
 
     # adds logo and abbreviation to current teams
@@ -68,7 +70,6 @@ def create_team_objects():
     coyotes = Team.query.filter(Team.name=='Arizona Coyotes').first()
     coyotes.abbr = 'ARI'
     coyotes.logo = 'https://assets.nhle.com/logos/nhl/svg/ARI_light.svg'
-
     db.session.add(coyotes)
     db.session.commit()
 # create_team_objects()
