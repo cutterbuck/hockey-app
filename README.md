@@ -1,11 +1,21 @@
-Hockey Advanced Stats Interactive Scatter Chart
+Hockey Demo App
 
-I believe that the now infamous hockey advanced statistic, most commonly known as "Corsi", is a highly flawed metric. A player's Corsi is calculated by looking at his/her team's shot attempts (shots on goal, wide, or blocked) in relation to the opposing team's shot attempts while this player is on the ice. For example, a player with a Corsi far above 50% may be considered above average because while the player is on the ice, the player's team is attempting more shots on the other team's net. Under such prism, Shot attempts are considered a proxy for puck possession and chance generation.
+The initial purpose of this project is to experiment with deploying a DASH application to DigitalOcean's App Platform. The app, in its current form, updates team standings by querying the NHLClient API every night. The longer-term goal is to delve deeper into NHL analytics in attempt to understand the game at a higher level.
 
-I feared that a player's Corsi statistic may not accurately describe actual high quality chance generation in reality. Players might be able to generate many low quality scoring chances by inflating their shot attempt stats with low quality shots from the perimeter. Furthermore, Corsi generally has an upper limit of 60%, meaning that even the "best" players still have to defend 40% of the time. What if a player with a 60% Corsi is a poor defender in the defensive zone and gives up more goals than average during that other 40% of the game?
+The next steps are to add players to each team's roster and track their statistics with a nightly batch update. The statistics included should be wide-ranging. For instance, basics like Goals, Assists, Points, and Time on Ice will be tracked as well as more "advanced" metrics like xGoals and NHL Edge physical data like skater top speed and 20mph+ burst frequency.
 
-I created a new statistic, called "Weighted Corsi Percentage", in an attempt to create a superior metric. Weighted Corsi is calculated by adding the percentage of goals forward to shot attempts forward with the percentage of goals against to shot attempts against. Therefore, a player with a poor Corsi may be considered to be an above average player if he/she is a strong defender as measured by the goals surrendered relative to the shot attempts against.
+This data will be used to ponder larger questions like:
+  - What team stats are the most predictable when it comes to team success (winning)?
+  - What player stats are the most predictable when it comes to team success?
+  - How persistent are the resulting stats from year-to-year? If variance is high, are they actually useful?
+  - By determining which analytics actually matter, is there a repeatable way to find undervalued players?
+  - Do overlooked stats exist that are predictive of winning?
+  - Keeping in mind Einstein's observation that "not everything that counts can be counted, and not everything that can be counted counts", do the results of this statistical analysis make sense from a qualitative basis?
+  - If every team did this kind of analysis, would there be no sustainable competitive advantage?
 
-I created an interactive scatter plot so scouts can choose two statistics and plot them together to uncover any relationships in the data. Stats are split season by season. A user can select a specific team or view all players across the NHL. I build this feature because I wished to display Weighted Corsi against "PDO" (shooting percentage + save percentage), a statistic widely regarded as a measure a player's luck. I wanted to see whether a player's "luck" affected his/her underlying possession statistics, or whether we had the causal arrow pointing in the wrong direction all along - ie. the player's ability drives his/her "luck" statistic.
+And also used to answer specific questions like:
+  - How much does faceoff win percentage correlate with team success in aggregate?
+  - How much does strong special teams play (powerplay, shorthanded, 6v5, and 5v6) drive team success?
+  - Qualitatively, it seems like faceoff wins are very important during special teams situations. Does faceoff win percentage actually help drive special teams success?
 
-Created by Jake MacNaughton (2018)
+Created by Jake MacNaughton (2025)
